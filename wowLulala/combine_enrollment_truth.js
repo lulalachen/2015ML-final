@@ -2,7 +2,8 @@ var fsp = require('fs-time-prefix'),
     ml = require('machine_learning'),
     stats = require("stats-lite"),
     Promise = require('bluebird'),
-    util = require('util');
+    util = require('util'),
+    cli = require('cli-color');;
 
 fsp.readFile('../data/enrollment_train.csv')
 .then(function(chunck){
@@ -18,7 +19,7 @@ fsp.readFile('../data/enrollment_train.csv')
 })
 .then(function(data){
   fsp.writeJsonFile('../data/enrollment_train_with_y.json', data);
-  console.log('Done');
+  console.log(cli.cyan("enrollment_train_with_y.json") + ' is generated.' );
 })
 
 function readTruthTrain (return_data,path){
