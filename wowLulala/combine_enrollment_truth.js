@@ -3,7 +3,7 @@ var fsp = require('fs-time-prefix'),
     stats = require("stats-lite"),
     Promise = require('bluebird'),
     util = require('util'),
-    cli = require('cli-color');;
+    cli = require('cli-color');
 
 fsp.readFile('../data/enrollment_train.csv')
 .then(function(chunck){

@@ -11,9 +11,12 @@ var Modules = require('./models/modules');
 var dataset = new Modules();
 
 var counter = 0;
+var flag = 0;
+
 lr.on('line', function(data){
   lr.pause();
   var rows = data.toString().split(',');
+  flag =
   counter++;
   dataset.add(rows[4], rows[3], rows);
   if (dataset.data.length % 100000 === 0){

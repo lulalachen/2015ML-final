@@ -92,14 +92,14 @@ var data = ["32,2014-06-22T23:22:03,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSr
 //   newData.push(row.split(','));
 // })
 
-// var User = function(enrollmentId, username){
-//   this.enrollmentId = enrollmentId;
-//   this.username = username;
-// };
+var User = function(enrollmentId, username){
+  this.enrollmentId = enrollmentId;
+  this.username = username;
+};
 
-// User.prototype.addCourse = function(courseId) {
-//   this.course.push(courseId);
-// };
+User.prototype.addCourse = function(courseId) {
+  this.course.push(courseId);
+};
 
 
 // ////////

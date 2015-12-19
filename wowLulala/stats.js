@@ -1,6 +1,7 @@
 var fsp = require('fs-promise'),
     ml = require('machine_learning'),
     stats = require("stats-lite"),
+    cli = require('cli-color'),
     Promise = require('bluebird');
 
 fsp.readFile('../data/sample_train_x.csv')
@@ -50,7 +51,7 @@ fsp.readFile('../data/sample_train_x.csv')
     delete data[i].dataset;
   };
   console.log('Finish calculating stats.');
-
+  console.log(cli.cyan('stats.json is generated.'));
   var path = './stats.json';
   fsp.writeFile(path, JSON.stringify(data), function(){
     console.log('Finish writing file into ' + path);
