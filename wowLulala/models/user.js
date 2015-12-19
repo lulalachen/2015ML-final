@@ -1,11 +1,10 @@
-var User = function(enrollmentId, username, courseId){
+var User = function(enrollmentId, username){
   this.enrollmentId = enrollmentId;
   this.username = username;
-  this.courseId = courseId;
 };
 
-User.prototype.addLog = function(enrollmentId, logInRow) {
-  console.log(logInRow);
+User.prototype.addCourse = function(courseId) {
+  this.course.push(courseId);
 };
 
 module.exports = User;
