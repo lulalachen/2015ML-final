@@ -1,4 +1,5 @@
 DEREK_ROOT = "heyDerek/"
+LIB_ROOT = "Libs/"
 
 ####################
 # Input Data

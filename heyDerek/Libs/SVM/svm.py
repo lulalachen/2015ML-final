@@ -1,6 +1,8 @@
 from ..Def import path_def
 from ..Utils import data_io as io
+from ..Utils import evaluate as ev
 from sklearn import svm
+import numpy as np
 import time
 
 
@@ -33,9 +35,18 @@ def run_svm(c, kernel):
     results = clf.predict(test_x)
     t2 = time.time()
     print "... cost", t2 - t1, "seconds"
-    print test_data_id.shape
-    print test_x.shape
-    print results.shape
+    # Output results
+    result_filename = "svm_c" + str(c) + "_" + kernel + ".csv"
+    result_file = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.SVM_ROOT + path_def.RESULT_FOLDER + result_filename
+    result_data = np.hstack((test_data_id.reshape((test_data_id.shape[0], 1)), results.reshape((results.shape[0], 1))))
+    print "Writing results"
+    t1 = time.time()
+    io.write_output_data(result_file, result_data, int)
+    t2 = time.time()
+    print "... cost", t2 - t1, "seconds"
+
+    dropout_rate = ev.calc_dropout_rate(results)
+    print "Test data dropout rate:", dropout_rate
 
 
 
