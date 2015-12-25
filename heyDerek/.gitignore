@@ -1,0 +1,7 @@
+# Python files
+*.pyc
+
+# Model and Result folders
+model/
+result/
+
