@@ -7,7 +7,7 @@ import numpy as np
 import time
 
 
-def run_logistic_regression(c):
+def run_logistic_regression(c, track):
     # Training
     train_file = path_def.SAMPLE_TRAIN_X_CSV
     print "Reading training file:", train_file
@@ -36,17 +36,22 @@ def run_logistic_regression(c):
 
     print "Predicting results"
     t1 = time.time()
-    results = clf.predict(std_test_x)
-    results[results == -1] = 0
+    if track == "track1":
+        results = clf.predict_proba(std_test_x)[:, 1]
+    else:
+        results = clf.predict(std_test_x)
+        results[results == -1] = 0
     t2 = time.time()
     print "... cost", t2 - t1, "seconds"
     # Output results
-    result_filename = "logistic_regression_c" + str(c) + ".csv"
+    track_name = "track1" if track == "track1" else "track2"
+    result_filename = "logistic_regression_c" + str(c) + "_" + track_name + ".csv"
     result_file = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.LOGISTIC_REGRESSION_ROOT + path_def.RESULT_FOLDER + result_filename
     result_data = np.hstack((test_data_id.reshape((test_data_id.shape[0], 1)), results.reshape((results.shape[0], 1))))
     print "Writing results"
     t1 = time.time()
-    io.write_output_data(result_file, result_data, int)
+    out_data_type = float if track == "track1" else int
+    io.write_output_data(result_file, result_data, out_data_type)
     t2 = time.time()
     print "... cost", t2 - t1, "seconds"
 

@@ -23,7 +23,7 @@ def write_output_data(output_data_path, output_data, dtype=float):
     if dtype == int:
         np.savetxt(output_data_path, output_data.astype(int), fmt='%i', delimiter=',')
     else:
-        np.savetxt(output_data_path, output_data, delimiter=',')
+        np.savetxt(output_data_path, output_data, fmt='%i,%f')
 
 
 ##########################################
