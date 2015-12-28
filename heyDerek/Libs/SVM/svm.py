@@ -13,7 +13,7 @@ def run_svm(c, kernel):
     print "Reading training file:", train_file
     t1 = time.time()
     train_data_id, train_x, train_y = io.read_train_data(train_file)
-    train_x = du.standardize_data(train_x)
+    train_x = du.standardize_data_var(train_x)
     train_y[train_y == 0] = -1.0
     t2 = time.time()
     print "... cost", t2 - t1, "seconds"
@@ -30,7 +30,7 @@ def run_svm(c, kernel):
     print "Reading testing file:", test_file
     t1 = time.time()
     test_data_id, test_x = io.read_test_data(test_file)
-    std_test_x = du.standardize_data(test_x)
+    std_test_x = du.standardize_data_var(test_x)
     t2 = time.time()
     print "... cost", t2 - t1, "seconds"
 

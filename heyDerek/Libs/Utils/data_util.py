@@ -1,15 +1,19 @@
 import numpy as np
-from sklearn.preprocessing import normalize
+from sklearn import preprocessing
 
 
 def normalize_data(data):
-    return normalize(data, norm='l1', axis=0)
+    return preprocessing.normalize(data, norm='l1', axis=0)
 
 
-def standardize_data(data):
+def standardize_data_var(data):
     data_mean = np.mean(data, axis=0)
     data_var = np.var(data, axis=0)
     return (data - data_mean) / data_var
+
+
+def standardize_data_std(data):
+    return preprocessing.scale(data)
 
 
 def random_sample(data, sample_num):
