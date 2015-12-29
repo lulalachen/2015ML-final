@@ -32,20 +32,21 @@ fsp.readFile('./results/course_stats.json')
     if (ans !== undefined){
       if (dataToBeGenerate === 'train')
         var tempY = enrollments[i].pop();
-
       var items = Object.keys(ans.stats);
       items.forEach(function(val){
         enrollments[i].push(ans.stats[val].toString());
       })
-
+      enrollments[i].shift();
+      enrollments[i].shift();
+      enrollments[i].shift();
       if (dataToBeGenerate === 'train')
         enrollments[i].push(tempY);
     }
   };
 
   if (dataToBeGenerate === 'train'){
-    fsp.writeJsonFile('../data/enrollments_train_with_course_stats(y).json', enrollments);
-    console.log(cli.cyan('enrollments_train_with_course_stats(y).json') + ' is generated.');
+    fsp.writeJsonFile('../data/enrollment_train_with_course_stats(y).json', enrollments);
+    console.log(cli.cyan('enrollment_train_with_course_stats(y).json') + ' is generated.');
   }
   else if (dataToBeGenerate === 'test'){
     fsp.writeJsonFile('../data/enrollment_test_with_course_stats.json', enrollments)

@@ -26,7 +26,8 @@ fsp.readFile('./results/course.json')
       stats : temp
     });
   })
-  console.log(counts[1]);
+  // fsp.writeJsonFile('./results/course_stats.json',counts);
+
   return counts;
 })
 .then(function(data){
@@ -38,7 +39,6 @@ fsp.readFile('./results/course.json')
     };
   };
 
-  // fsp.writeJsonFile('./results/course_stats.json',data);
 })
 
 
