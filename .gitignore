@@ -1,5 +1,4 @@
 */node_modules/
 data/*.csv
-data/*
 fs-time-prefix/*
 .env
