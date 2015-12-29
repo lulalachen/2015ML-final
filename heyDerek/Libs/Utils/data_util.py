@@ -2,8 +2,21 @@ import numpy as np
 from sklearn import preprocessing
 
 
-def normalize_data(data):
-    return preprocessing.normalize(data, norm='l1', axis=0)
+def normalize_data(data, norm='l2', axis=0):
+    return preprocessing.normalize(data, norm=norm, axis=axis)
+
+
+def normalize_data_minmax(data, axis=0):
+    min_vec = np.min(data, axis=axis)
+    max_vec = np.max(data, axis=axis)
+    dif_vec = max_vec - min_vec
+    if axis == 0:
+        min_mat = np.tile(min_vec.reshape((1, data.shape[1])), (data.shape[0], 1))
+        dif_mat = np.tile(dif_vec.reshape((1, data.shape[1])), (data.shape[0], 1))
+    else:
+        min_mat = np.tile(min_vec.reshape((data.shape[0], 1)), (1, data.shape[1]))
+        dif_mat = np.tile(dif_vec.reshape((data.shape[0], 1)), (1, data.shape[1]))
+    return (data - min_mat) / dif_mat
 
 
 def standardize_data_var(data):

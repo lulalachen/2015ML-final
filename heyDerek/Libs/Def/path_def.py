@@ -25,8 +25,11 @@ SAMPLE_TEST_X_CSV = "sample_test_x.csv"
 # Algorithm Roots
 SVM_ROOT = "SVM/"
 LOGISTIC_REGRESSION_ROOT = "LogisticRegression/"
+DNN_ROOT = "DNN/"
 
 # Output Folders
 RESULT_FOLDER = "result/"
 MODEL_FOLDER = "model/"
 
+# Temp Folders
+TMP_FOLDER = "tmp/"

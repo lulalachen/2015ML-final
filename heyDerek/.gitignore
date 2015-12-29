@@ -1,7 +1,9 @@
 # Python files
 *.pyc
 
-# Model and Result folders
+# Data, Tmp, Model and Result folders
+data/
+tmp/
 model/
 result/
 
