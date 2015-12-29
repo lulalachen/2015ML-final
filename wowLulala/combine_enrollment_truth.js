@@ -22,6 +22,7 @@ fsp.readFile(target)
     var columns = row.split(',');
     return_data.push(columns);
   });
+  console.log(  return_data.pop());
   // console.log('Finish row-based transformation.');
   if (dataToBeGenerate === 'test'){
     fsp.writeFile('../data/enrollment_test.json',JSON.stringify(return_data));
@@ -45,13 +46,14 @@ function readTruthTrain (return_data,path){
       .then(function(chunck){
         var rows = chunck.toString().split('\n');
         return_data[0].push('y');
-        for (var i = 1; i < return_data.length - 1 ; i++) {
+        for (var i = 1; i < return_data.length; i++) {
           return_data[i].push(rows[i-1].split(',')[1]);
         };
         for (var i = 0; i < return_data.length; i++) {
           if (return_data[i].length === 0)
             delete return_data[i];
         };
+        // return_data.pop(); // Remove raw data bottom empty line
         resolve(return_data); // resolve => return data
       })
   })

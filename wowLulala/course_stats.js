@@ -11,22 +11,40 @@ fsp.readFile('./results/course.json')
 .then(function(data){
   var courses = data.courses;
   var counts = [];
+  var fields = [
+                'about',
+                'chapter',
+                'combinedopenended',
+                'course',
+                'course_info',
+                'discussion',
+                'html',
+                'outlink',
+                'peergrading',
+                'problem',
+                'sequential',
+                'static_tab',
+                'vertical',
+                'video',
+                'dictation'
+              ];
+
   courses.forEach(function(each, idx, arr){
     var temp = {};
+    var category = [];
+    for (var i = 0; i < fields.length; i++) {
+      temp[fields[i]] = 0;
+    };
     for (var i = 0; i < each.modules.length; i++) {
-      if (!temp[each.modules[i].category]){
-        temp[each.modules[i].category] = 0;
-        temp[each.modules[i].category]++;
-      } else {
         temp[each.modules[i].category] ++;
-      }
     };
     counts.push({
       id : each.courseIdRaw,
       stats : temp
     });
   })
-  // fsp.writeJsonFile('./results/course_stats.json',counts);
+
+  fsp.writeJsonFile('./results/course_stats.json',counts);
 
   return counts;
 })
