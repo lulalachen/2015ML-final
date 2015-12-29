@@ -11,11 +11,15 @@
   "dependencies": {
     "bluebird": "^3.1.1",
     "cli-color": "^1.1.0",
+    "dotenv": "^1.2.0",
     "fs-promise": "^0.3.1",
     "fs-time-prefix": "^1.0.0",
+    "limdu": "^0.8.0",
     "line-by-line": "^0.1.4",
     "machine_learning": "0.0.8",
+    "natural": "^0.2.1",
     "stats-lite": "^2.0.0",
-    "time": "^0.11.4"
+    "time": "^0.11.4",
+    "underscore": "^1.8.3"
   }
 }

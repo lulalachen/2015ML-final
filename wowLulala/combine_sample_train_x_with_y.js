@@ -14,7 +14,7 @@ fsp.readFile('../data/sample_train_x.csv')
     var columns = row.split(',');
     return_data.push(columns);
   });
-  console.log('Finish row-based transformation.');
+  // console.log('Finish row-based transformation.');
   return readTruthTrain(return_data, '../data/truth_train.csv');
 })
 .then(function(data){

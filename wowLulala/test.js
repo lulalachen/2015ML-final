@@ -12,7 +12,6 @@ var A = '2014-06-14T09:38:29';
 var B = '2014-06-14T09:45:29';
 
 
-
 var data = ["32,2014-06-22T23:22:03,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
 "32,2014-06-22T23:22:07,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
 "32,2014-06-22T23:22:07,server,access,Zqtcad1eZCX5EPHz3Nzkc1ILYPoLk1s6",

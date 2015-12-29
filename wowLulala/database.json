@@ -1,0 +1,37 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "postgres",
+    "password": "",
+    "host": "localhost",
+    "database": "ml_final_project"
+  },
+
+  "test": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  },
+
+  "prod": {
+    "driver": "mysql",
+    "user": "root",
+    "password": "root"
+  },
+
+  "pg": {
+    "driver": "pg",
+    "user": "test",
+    "password": "test",
+    "host": "localhost",
+    "database": "mydb",
+    "schema": "my_schema"
+  },
+
+  "mongo": {
+    "driver": "mongodb",
+    "database": "my_db",
+    "host": "localhost"
+  },
+
+  "url": "postgres://uname:pw@server.com/dbname"
+}

@@ -5,7 +5,15 @@ var fsp = require('fs-time-prefix'),
     util = require('util'),
     cli = require('cli-color');
 
-fsp.readFile('../data/enrollment_train.csv')
+
+var dataToBeGenerate = process.env.DATATYPE || 'train';
+var target;
+if (dataToBeGenerate === 'train')
+  target = '../data/enrollment_train.csv';
+else if (dataToBeGenerate === 'test')
+  target = '../data/enrollment_test.csv';
+
+fsp.readFile(target)
 .then(function(chunck){
   // Convert into row-based dataset //
   var rows = chunck.toString().split('\n');
@@ -14,12 +22,21 @@ fsp.readFile('../data/enrollment_train.csv')
     var columns = row.split(',');
     return_data.push(columns);
   });
-  console.log('Finish row-based transformation.');
-  return readTruthTrain(return_data, '../data/truth_train.csv');
+  // console.log('Finish row-based transformation.');
+  if (dataToBeGenerate === 'test'){
+    fsp.writeFile('../data/enrollment_test.json',JSON.stringify(return_data));
+    console.log(cli.cyan("enrollment_test.json") + ' is generated.' );
+    return null;
+  }
+  if (dataToBeGenerate === 'train')
+    return readTruthTrain(return_data, '../data/truth_train.csv');
 })
 .then(function(data){
-  fsp.writeJsonFile('../data/enrollment_train_with_y.json', data);
-  console.log(cli.cyan("enrollment_train_with_y.json") + ' is generated.' );
+  if (data !== null) {
+  // console.log(JSON.parse(JSON.stringify(data)));
+    fsp.writeFile('../data/enrollment_train_with_y.json', JSON.stringify(data));
+    console.log(cli.cyan("enrollment_train_with_y.json") + ' is generated.' );
+  }
 })
 
 function readTruthTrain (return_data,path){

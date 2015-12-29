@@ -5,91 +5,59 @@ var fsp = require('fs-time-prefix'),
     util = require('util');
 
 var LineByLineReader = require('line-by-line'),
-    lr = new LineByLineReader('../data/log_train.csv');
-var Modules = require('./models/modules');
+    lr = new LineByLineReader('../data/object.csv');
+var Courses = require('./models/courses');
 
-var dataset = new Modules();
+var dataset = new Courses();
 
-var counter = 0;
-var flag = 0;
+var line = 0;
 
-lr.on('line', function(data){
-  lr.pause();
-  var rows = data.toString().split(',');
-  flag =
-  counter++;
-  dataset.add(rows[4], rows[3], rows);
-  if (dataset.data.length % 100000 === 0){
-    dataset.merge();
-    console.log('Meow : ' + counter + 'line, '+ dataset.data.length + 'length'+ ' | Memory use : '+ util.inspect(process.memoryUsage()));
-  }
-  lr.resume();
-});
-
-lr.on('end', function(){
-  console.log(dataset.data.length);
-  fsp.writeTimePrefix('./')
-  dataset.merge();
-  console.log('Done');
+// All 27250 ; first 468
+readFromFile(1,468,processFunction,function(err, data){
+  if (err)
+    return console.log(err);
+  // data.constructMap();
+  fsp.writeJsonFile('./results/course.json', data);
 })
-// fsp.readFile('../data/log_train.csv')
-// .then(function(chunck){
-//   // Convert into row-based dataset //
-//   console.log(chunck);
-//   // var rows = chunck.toString().split('\n');
-//   var return_data = [];
-//   // rows.forEach(function(row){
-//   //   var columns = row.split(',');
-//   //   return_data.push(columns);
-//   // });
-//   console.log('Finish row-based transformation.');
-//   return return_data;
-// })
-// .then(function(data){
-//   console.log(data[0]);
-// })
 
-// .then(function(data){
-//   // Convert into column-based dataset //
-//   var tempData = [];
+function processFunction (rows, dataset){
+  dataset.addCourse(rows)
+  // console.log('processing~~~');
+}
 
-//   data[0].forEach(function(item){
-//     tempData.push({
-//       title : item,
-//       dataset : []
-//     });
-//   });
+function readFromFile(offsets, limits, processor, callback){
+  var dataset = new Courses();
 
-//   for (var i = 1; i < data.length; i++) {
-//     for (var j = 0; j < data[i].length; j++) {
-//       tempData[j].dataset.push(data[i][j]);
-//     };
-//   };
-//   console.log('Finish column-based transformation.');
-//   return tempData;
-// })
-// .then(function(data){
-//   // Calculate basic column stats //
-//   var statistics = function (input){
-//     this.sum = stats.sum(input);
-//     this.mean = stats.mean(input);
-//     this.median = stats.median(input);
-//     this.variance = stats.variance(input);
-//     this.standard_deviation = stats.stdev(input);
-//     this.percentileOfEightyFive = stats.percentile(input,0.85);
-//   };
+  lr.on('line', function(data){
+    lr.pause();
+    line++;
+    var rows = data.toString().split(',');
+    if (line <= offsets){
+      // Skip process
+      lr.resume();
+      // console.log('skip process');
+    }
+    else if (line <= limits) {
+      lr.resume();
+      processor(rows, dataset);
+      // console.log('process');
+    }
+    else{
+      lr.end();
+    }
+  });
 
-//   for (var i = 0; i < data.length; i++) {
-//     data[i].stats = new statistics(data[i].dataset);
-//     delete data[i].dataset;
-//   };
-//   console.log('Finish calculating stats.');
+  lr.on('error', function(err){
+    callback(err, null);
+  });
+  lr.on('end', function(){
+    // console.log('Dataset length : ' + dataset.length);
+    // fsp.writeTimePrefix('./results')
+    console.log('Done');
+    callback(null, dataset);
+  });
+}
 
-//   var path = './stats.json';
-//   fsp.writeFile(path, JSON.stringify(data), function(){
-//     console.log('Finish writing file into ' + path);
-//   });
-// })
 
 function stats(data){
   // Calculate basic column stats //
@@ -113,8 +81,8 @@ function stats(data){
 function readTruthTrain (return_data, path){
   return new Promise (function(resolve, reject){
       fsp.readFile(path)
-      .then(function(chunck){
-        var rows = chunck.toString().split('\n');
+      .then(function(chunk){
+        var rows = chunk.toString().split('\n');
         return_data[0].push('y');
         for (var i = 1; i < return_data.length - 1 ; i++) {
           return_data[i].push(rows[i-1].split(',')[1]);
