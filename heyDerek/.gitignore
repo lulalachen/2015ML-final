@@ -6,4 +6,6 @@ data/
 tmp/
 model/
 result/
+# Backup folder
+bak/
 

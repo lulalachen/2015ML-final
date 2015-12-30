@@ -47,7 +47,7 @@ class DNN:
 
     def run(self, track="track1"):
         # Prepare data
-        self.prep_data()
+        # self.prep_data()
 
         # Training
         self.train()
@@ -136,7 +136,10 @@ class DNN:
 
     # Data preprocessing
     def preprocess_input_data(self, input_data):
-        return du.normalize_data_minmax(input_data, axis=0)
+        normalized_data = du.normalize_data_minmax(input_data, axis=0)
+        # add bias ones
+        data_size = normalized_data.shape[0]
+        return np.hstack((np.ones((data_size, 1), dtype=np.float32), normalized_data))
 
     def train(self):
         train_data_file = self._data_path + self._train_file
