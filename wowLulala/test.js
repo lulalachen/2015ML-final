@@ -1,165 +1,190 @@
 var fsp = require('fs-time-prefix');
-
-var data = {
-  name : 'lulala',
-  birthday : '1993/02/06'
-};
-
-// fsp.writeJsonFile('./test123.json',data);
-// fsp.writeTimePrefix('./test123.json',data);
-
-var A = '2014-06-14T09:38:29';
-var B = '2014-06-14T09:45:29';
+var Promise = require('bluebird');
+var stats = require("stats-lite");
+var ml = require('machine_learning');
 
 
-var data = ["32,2014-06-22T23:22:03,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-22T23:22:07,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:22:07,server,access,Zqtcad1eZCX5EPHz3Nzkc1ILYPoLk1s6",
-"32,2014-06-22T23:22:12,server,access,AID4xxV79viIHIAExKx5brZ9PQa1fjlZ",
-"32,2014-06-22T23:22:13,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:22:46,server,access,PSjYLli3GRFSCsvRX8SbKhC6uC0uxoiM",
-"32,2014-06-22T23:22:47,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:23:06,server,access,1y5K5Inw0Z77xJhcRNxp69iTArwtwytJ",
-"32,2014-06-22T23:23:06,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:23:48,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-22T23:23:48,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:23:48,browser,video,GudxGLTs5za4ArMgX30DOW5dR5Erca5m",
-"32,2014-06-22T23:24:45,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-22T23:24:45,server,access,b7jY5UjELslMZUZDW7OrUrU8kPeqc4fx",
-"32,2014-06-22T23:25:38,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T07:20:05,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-29T07:20:10,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T07:20:10,server,access,b7jY5UjELslMZUZDW7OrUrU8kPeqc4fx",
-"32,2014-06-29T07:20:16,server,access,PSjYLli3GRFSCsvRX8SbKhC6uC0uxoiM",
-"32,2014-06-29T07:20:16,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T07:20:25,browser,problem,W0a2rpsbk4NaGPS6am63e0T6F9tuRVPX",
-"32,2014-06-29T07:20:25,server,problem,W0a2rpsbk4NaGPS6am63e0T6F9tuRVPX",
-"32,2014-06-29T07:20:32,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-29T07:20:32,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T07:20:38,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T07:20:38,server,access,b7jY5UjELslMZUZDW7OrUrU8kPeqc4fx",
-"32,2014-06-29T07:21:18,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:20:22,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-29T14:20:28,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:20:28,server,access,b7jY5UjELslMZUZDW7OrUrU8kPeqc4fx",
-"32,2014-06-29T14:20:32,server,access,PSjYLli3GRFSCsvRX8SbKhC6uC0uxoiM",
-"32,2014-06-29T14:20:33,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:20:44,browser,problem,W0a2rpsbk4NaGPS6am63e0T6F9tuRVPX",
-"32,2014-06-29T14:20:44,server,problem,W0a2rpsbk4NaGPS6am63e0T6F9tuRVPX",
-"32,2014-06-29T14:21:13,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-29T14:21:13,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:21:30,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:21:31,server,access,b7jY5UjELslMZUZDW7OrUrU8kPeqc4fx",
-"32,2014-06-29T14:22:19,server,access,Uy8jlkLCnSvTUVFHsNPK3HqikgQ6mogG",
-"32,2014-06-29T14:22:20,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-29T14:29:38,browser,problem,U6sC3Uvz5CIcxtKguV7GbDiC5xQrUVk8",
-"32,2014-06-29T14:35:57,browser,problem,U6sC3Uvz5CIcxtKguV7GbDiC5xQrUVk8",
-"32,2014-06-29T14:40:22,browser,problem,U6sC3Uvz5CIcxtKguV7GbDiC5xQrUVk8",
-"32,2014-06-29T14:52:18,browser,problem,U6sC3Uvz5CIcxtKguV7GbDiC5xQrUVk8",
-"32,2014-06-29T14:52:20,browser,problem,U6sC3Uvz5CIcxtKguV7GbDiC5xQrUVk8",
-"32,2014-06-30T14:41:33,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-06-30T14:41:42,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:41:43,server,access,DpjvyKN1AhW8wuxH5KHu7m4GZP1kFWWA",
-"32,2014-06-30T14:41:50,server,access,Uy8jlkLCnSvTUVFHsNPK3HqikgQ6mogG",
-"32,2014-06-30T14:41:50,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:43:04,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:43:05,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:44:50,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:44:50,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:44:51,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:45:53,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:45:54,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-06-30T14:45:55,server,discussion,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-07-02T00:09:59,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-07-02T00:10:04,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-07-02T00:10:04,server,access,DpjvyKN1AhW8wuxH5KHu7m4GZP1kFWWA",
-"32,2014-07-02T00:10:14,server,access,Uy8jlkLCnSvTUVFHsNPK3HqikgQ6mogG",
-"32,2014-07-02T00:10:15,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-07-02T00:15:32,browser,problem,rwWB2Ff8REO0cr2ythjHXOiVyVNum0id",
-"32,2014-07-02T00:23:08,browser,problem,rwWB2Ff8REO0cr2ythjHXOiVyVNum0id",
-"32,2014-07-02T00:23:10,browser,problem,rwWB2Ff8REO0cr2ythjHXOiVyVNum0id",
-"32,2014-07-02T00:23:11,browser,problem,rwWB2Ff8REO0cr2ythjHXOiVyVNum0id",
-"32,2014-07-03T00:41:04,server,nagivate,Oj6eQgzrdqBMlaCtaq1IkY6zruSrb71b",
-"32,2014-07-03T00:41:17,server,access,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-07-03T00:41:17,server,access,DpjvyKN1AhW8wuxH5KHu7m4GZP1kFWWA",
-"32,2014-07-03T00:41:28,server,access,Uy8jlkLCnSvTUVFHsNPK3HqikgQ6mogG",
-"32,2014-07-03T00:41:28,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl",
-"32,2014-07-03T00:42:01,browser,page_close,3T6XwoiMKgol57cm29Rjy8FXVFcIomxl"];
+fsp.readFile('../data/enrollment_train_with_y.json')
+.then(function(chunk){
+  var data = JSON.parse(chunk);
+  var targetCourse = 'AXUJZGmZ0xaYSWazu8RQ1G5c76ECT1Kd';
+  var pass = 0,
+      fail = 0;
+  var list = [];
+  for (var i = 0; i < data.length; i++) {
+    if (data[i][2] === targetCourse){
+      if (data[i][3] === '1')
+        fail++;
+      else if (data[i][3] === '0'){
+        // list.push(data[i][0]);
+        pass++;
+      }
+      list.push(data[i][0]);
+    }
+  };
+  console.log(pass, fail, pass/(pass+fail));
+  return readAnother(list, '../data/sample_train_x_with_y.json');
+})
+.spread(function(data, list){
 
-// var newData = [];
-// data.forEach(function(row){
-//   newData.push(row.split(','));
+  var x = [],
+      y = [];
+  data.shift();
+  for (var i = 0; i < data.length; i++) {
+    y.push([data[i].pop()]);
+    x.push(data[i]);
+  };
+  var knn = new ml.KNN({
+    data : x,
+    result : y
+  });
+  return predict(knn, '../data/sample_test_x.json');
+})
+// .spread(function(data, list){
+//   // logistic
+//   var x = [],
+//       y = [];
+//   data.shift();
+//   for (var i = 0; i < data.length; i++) {
+//     y.push([data[i].pop()]);
+//     x.push(data[i]);
+//   };
+//   var classifier = new ml.LogisticRegression({
+//       'input' : x,
+//       'label' : y,
+//       'n_in' : data[0].length,
+//       'n_out' : 1
+//   });
+
+//   classifier.train({
+//       'lr' : 0.6,
+//       'epochs' : 2000
+//   });
+
+//   return predict(classifier, '../data/sample_test_x.json');
 // })
+// .spread(function(data, list){
+// // SVM
+//   var x = [],
+//       y = [];
 
-var User = function(enrollmentId, username){
-  this.enrollmentId = enrollmentId;
-  this.username = username;
-};
-
-User.prototype.addCourse = function(courseId) {
-  this.course.push(courseId);
-};
-
-
-// ////////
-// var modules = function(){
-//   this.data = [];
-// }
-
-// modules.prototype.add = function(moduleId, eventType, log) {
-//   var tempModule = new module(moduleId, eventType);
-//   tempModule.addLog(log);
-//   this.data.push(tempModule);
-// };
-
-// modules.prototype.findOne = function(moduleId) {
-//   var temp = false;
-//   this.data.forEach(function(val){
-//     if (val.moduleId === moduleId)
-//       temp = val;
+//   data.shift();
+//   for (var i = 0; i < data.length; i++) {
+//     y.push(data[i].pop());
+//     x.push(data[i]);
+//   };
+//   // console.log(x);
+//   // console.log(y);
+//   console.log('Start SVM');
+//   console.time('svm');
+//   console.time('svm-train');
+//   var svm = new ml.SVM({
+//       x : x,
+//       y : y
 //   });
-//   return temp;
-// };
-// modules.prototype.merge = function() {
-//   var temp = [];
-//   this.data.forEach(function(md, idx, arr){
-//     var exist = false;
-//     for (var i = 0; i < temp.length; i++) {
-//       if (temp[i].moduleId === md.moduleId){
-//         temp[i].count++;
-//         temp[i].logs.push(md.logs[0]);
-//         arr.splice(idx,1);
-//         exist = true;
-//       }
-//     };
-//     if (!exist)
-//       temp.push(md)
+
+//   svm.train({
+//     C : 1.5, // default : 1.0. C in SVM.
+//     tol : 1e-3, // default : 1e-4. Higher tolerance --> Higher precision
+//     max_passes : 25, // default : 20. Higher max_passes --> Higher precision
+//     alpha_tol : 1e-3, // default : 1e-5. Higher alpha_tolerance --> Higher precision
+//     kernel : {type : "gaussian", sigma : 1.0} // this is default.kernel : {type : ""} // x*y
 //   });
-// };
-// /////////
-// var module = function(moduleId, eventType){
-//   this.moduleId = moduleId;
-//   this.eventType = eventType;
-//   this.count = 1;
-//   this.logs = [];
-// };
+//   console.timeEnd('svm-train');
+//   return predict(svm, '../data/sample_test_x.json');
+// })
+.then(function(predicts){
+  // Display results
+  console.log(predicts);
+  // console.timeEnd('svm');
+  fsp.writeJsonFile('./results/KNN_id_six.json', predicts);
+})
+// .spread(function(data, list){
+//   var col = [];
+//   for (var i = 0; i < data[0].length; i++) {
+//     col[i] = [];
+//   };
+//   for (var i = 1; i < data.length; i++){
+//     for (var j = 0; j < data[i].length; j++){
+//       col[j].push(data[i][j]);
+//     }
+//   }
+//   var stats = [];
+//   for (var i = 0; i < col.length; i++) {
+//     stats.push({
+//       column : data[0][i],
+//       stats : getStats(col[i])
+//     });
+//   };
+//   console.log(stats);
+// })
+function predict (classifier, path) {
+  return new Promise(function(resolve, reject){
+    fsp.readFile(path)
+    .then(function(chunk){
+      var data = JSON.parse(chunk);
+      data.shift();
+      var predicts = [];
+      data.forEach(function(each, idx, arr){
+        // predicts.push(classifier.predict(each));
+        if (idx % 1000 === 0)
+          console.log('Meow ' + idx);
+        predicts.push(classifier.predict({
+          x : each,
+          k : 3,
+          weightf : {type : 'gaussian', sigma : 10.0},
+          distance : {type : 'euclidean'}
+        }));
+      })
+      // predicts = classifier.predict(data);
 
-// module.prototype.addLog = function(log) {
-//   this.logs.push(log);
-// };
+      resolve(predicts);
+    })
+  })
+}
 
-// var dataset = new modules();
-// for (var i = 0; i < newData.length; i++) {
-//   dataset.add(newData[i][4], newData[i][3], newData[i]);
-// };
+function readAnother (list, path){
+  return new Promise(function(resolve, reject){
+    fsp.readFile(path)
+    .then(function(chunk){
+      var rows = JSON.parse(chunk);
+      var data = [];
+      data.push(rows[0])
+      for (var i = 0; i < list.length; i++) {
+        for (var j = 0; j < rows.length; j++) {
+          if (Number(rows[j][0]) === Number(list[i])){
+            data.push(rows[j]);
+            break;
+          }
+        };
+      };
+      // console.log(data[1]);
+      resolve([data, list]);
+    })
+  })
+}
 
-// console.log(dataset.data.length);
-// dataset.merge();
-// console.log(dataset.data.length);
-// console.log(dataset.data[0]);
+function getStats(data){
+  // Calculate basic column stats //
+  var statistics = function (input){
+    this.sum = stats.sum(input);
+    this.mean = stats.mean(input);
+    this.median = stats.median(input);
+    this.variance = stats.variance(input);
+    this.standard_deviation = stats.stdev(input);
+    this.percentile = stats.percentile(input,0.2);
+  };
+  return (data.length !== 0) ? new statistics(data) : new statistics([0]);
+}
 
-// var count = 0;
-// for (var i = 0; i < dataset.data.length; i++) {
-//   count += dataset.data[i].count;
-// };
-// console.log(count);
+
+function normalize (data) {
+  var variance  = stats.variance(data);
+  var mean      = stats.mean(data);
+  data.forEach(function(val){
+    if (variance !== 0){
+      val -= mean;
+      val /= variance;
+    };
+  });
+}
