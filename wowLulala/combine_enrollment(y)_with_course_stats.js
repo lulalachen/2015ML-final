@@ -57,14 +57,14 @@ fsp.readFile('./results/course_stats.json')
     }
   };
 
-  if (dataToBeGenerate === 'train'){
-    fsp.writeJsonFile('../data/enrollment_train_with_course_stats(y).json', enrollments);
-    console.log(cli.cyan('enrollment_train_with_course_stats(y).json') + ' is generated.');
-  }
-  else if (dataToBeGenerate === 'test'){
-    fsp.writeJsonFile('../data/enrollment_test_with_course_stats.json', enrollments)
-    console.log(cli.cyan('enrollment_test_with_course_stats.json') + ' is generated.');
-  }
+  // if (dataToBeGenerate === 'train'){
+  //   fsp.writeJsonFile('../data/enrollment_train_with_course_stats(y).json', enrollments);
+  //   console.log(cli.cyan('enrollment_train_with_course_stats(y).json') + ' is generated.');
+  // }
+  // else if (dataToBeGenerate === 'test'){
+  //   fsp.writeJsonFile('../data/enrollment_test_with_course_stats.json', enrollments)
+  //   console.log(cli.cyan('enrollment_test_with_course_stats.json') + ' is generated.');
+  // }
 })
 
 

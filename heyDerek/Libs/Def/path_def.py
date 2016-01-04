@@ -5,7 +5,7 @@ LIB_ROOT = "Libs/"
 # Input Data
 ####################
 # Input Data Root Folder
-DATA_PATH_ROOT = "data/"
+DATA_PATH_ROOT = "../data/"
 
 #############
 # Train data
@@ -13,13 +13,15 @@ DATA_PATH_ROOT = "data/"
 TRUTH_TRAIN_CSV = "truth_train.csv"
 
 # Train data features
-SAMPLE_TRAIN_X_CSV = "sample_train_x.csv"
+# SAMPLE_TRAIN_X_CSV = "sample_train_x.csv"
+SAMPLE_TRAIN_X_CSV = "sample_train_x_with_course_stats.csv"
 
 ############
 # Test data
 ############
 # Test data features
-SAMPLE_TEST_X_CSV = "sample_test_x.csv"
+# SAMPLE_TEST_X_CSV = "sample_test_x.csv"
+SAMPLE_TEST_X_CSV = "sample_test_x_with_course_stats.csv"
 
 
 # Algorithm Roots

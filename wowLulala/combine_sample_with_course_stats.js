@@ -32,6 +32,8 @@ fsp.readFile(target[0])
 .spread(function(data,y){
 
   data.unshift(title); // Put title back in line
+  // console.log(data[0]);
+  // console.log(data[1]);
   if (dataToBeGenerate === 'train')
     fsp.writeJsonFile('../data/sample_train_x_with_course_stats.json', data);
   else
@@ -45,14 +47,15 @@ function readSample (enrollment_data, y, path){
       fsp.readFile(path)
       .then(function(chunk){
         var rows = JSON.parse(chunk);
-        title = title.concat(rows.shift()); // Remove title
+        rows[0].pop();
+        title = rows.shift().concat(title).concat('y'); // Remove title
         for (var i = 0; i < rows.length; i++) {
           if (dataToBeGenerate === 'train')
             rows[i].pop(); // Remove 'y'
           rows[i] = rows[i].concat(enrollment_data[i]).concat(y[i]);
-          rows[i].shift(); // Remove Id
-          rows[i].shift(); // Remove username
-          rows[i].shift(); // Remove courseId
+          // rows[i].shift(); // Remove Id
+          // rows[i].shift(); // Remove username
+          // rows[i].shift(); // Remove courseId
         };
         resolve([rows, y]); // resolve => return data
       })
