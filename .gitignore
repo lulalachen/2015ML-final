@@ -2,3 +2,10 @@
 data/*.csv
 fs-time-prefix/*
 .env
+
+# IDE Files
+.idea/*
+
+# Mac Files
+*/.DS_Store
+

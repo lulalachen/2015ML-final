@@ -1,0 +1,11 @@
+# Python files
+*.pyc
+
+# Data, Tmp, Model and Result folders
+data/
+tmp/
+model/
+result/
+# Backup folder
+bak/
+
