@@ -13,13 +13,15 @@ DATA_PATH_ROOT = "data/"
 TRUTH_TRAIN_CSV = "truth_train.csv"
 
 # Train data features
-SAMPLE_TRAIN_X_CSV = "sample_train_x.csv"
+# SAMPLE_TRAIN_X_CSV = "sample_train_x.csv"
+SAMPLE_TRAIN_X_CSV = "rf_2000_trees_9_features_train_x.csv"
 
 ############
 # Test data
 ############
 # Test data features
-SAMPLE_TEST_X_CSV = "sample_test_x.csv"
+# SAMPLE_TEST_X_CSV = "sample_test_x.csv"
+SAMPLE_TEST_X_CSV = "rf_2000_trees_9_features_test_x.csv"
 
 
 # Algorithm Roots

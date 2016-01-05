@@ -7,16 +7,14 @@ import numpy as np
 
 
 class RandomForest:
-    def __init__(self, tree_num, fold_num):
+    def __init__(self, tree_num, min_sample_leaves):
         # Result / Model path
         self._result_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.RANDOM_FOREST_ROOT + path_def.RESULT_FOLDER
         self._model_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.RANDOM_FOREST_ROOT + path_def.MODEL_FOLDER
 
         # Model Parameters
         self._tree_num = tree_num
-
-        # Validation Parameters
-        self._fold_num = fold_num
+        self._min_sample_leaves = min_sample_leaves
 
     def run(self, track="track1"):
         # Read input data
@@ -40,8 +38,32 @@ class RandomForest:
         # print "Min cross validation error =", min_error_cv
 
         # Train with best c
-        print "Training with tree num =", self._tree_num
-        self._best_clf = ev.timer(self.train, self._tree_num, input_x, input_y)
+        # print "Training with tree num =", self._tree_num
+        # self._best_clf = None
+        # best_min_sample_leaves = None
+        # best_oob_score = 0
+        # for l in self._min_sample_leaves_list:
+        #     print "training min sample leave num =", l
+        #     clf = ev.timer(self.train, self._tree_num, l, input_x, input_y)
+        #     print "oob score:", clf.oob_score_
+        #     if clf.oob_score_ > best_oob_score:
+        #         best_oob_score = clf.oob_score_
+        #         best_min_sample_leaves = l
+        #         self._best_clf = clf
+        # print "best min sample leaves =", best_min_sample_leaves
+        print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._min_sample_leaves
+        self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves, input_x, input_y)
+
+
+        # print "Extracting good features"
+        # feature_nums = [5, 7, 9]
+        # for feature_num in feature_nums:
+        #     good_feature_indices = self.extract_good_features(self._best_clf, feature_num)
+        #     extracted_train_filename = path_def.DATA_PATH_ROOT + "rf_" + str(self._tree_num) + "_trees_" + str(feature_num) + "_features_train_x.csv"
+        #     extracted_test_filename = path_def.DATA_PATH_ROOT + "rf_" + str(self._tree_num) + "_trees_" + str(feature_num) + "_features_test_x.csv"
+        #     io.extract_features(path_def.SAMPLE_TRAIN_X_CSV, extracted_train_filename, good_feature_indices)
+        #     io.extract_features(path_def.SAMPLE_TEST_X_CSV, extracted_test_filename, good_feature_indices)
+
 
         # Read test data
         test_data_id, test_x = self.read_input_data(path_def.SAMPLE_TEST_X_CSV, io.read_test_data)
@@ -49,14 +71,18 @@ class RandomForest:
 
         # Test
         print "Predicting results"
-        results = ev.timer(self.test, self._best_clf, test_x, track)
+        results1 = ev.timer(self.test, self._best_clf, test_x, "track1")
+        results2 = ev.timer(self.test, self._best_clf, test_x, "track2")
 
         # Output results
-        self.save_output_data(test_data_id, results, track)
+        self.save_output_data(test_data_id, results1, "track1")
+        self.save_output_data(test_data_id, results2, "track2")
 
         # Evaluate output dropout rate
-        dropout_rate = ev.calc_dropout_rate(results)
-        print "Test data dropout rate:", dropout_rate
+        dropout_rate1 = ev.calc_dropout_rate(results1)
+        dropout_rate2 = ev.calc_dropout_rate(results2)
+        print "Test data track1 dropout rate:", dropout_rate1
+        print "Test data track2 dropout rate:", dropout_rate2
 
     # Data Input / Output
     def read_input_data(self, filename, read_method, *read_args):
@@ -84,6 +110,13 @@ class RandomForest:
         processed_ref_data[processed_ref_data == 0] = -1.0
         return processed_ref_data
 
+    # Data extraction
+    def extract_good_features(self, clf, extract_num):
+        important_features = np.array(clf.feature_importances_)
+        print important_features
+        important_features_order_indices = important_features.argsort()
+        return important_features_order_indices[::-1][0:extract_num]
+
     # Train / Validata / Test
     def cross_validation(self, c, input_data):
         # Cross validation
@@ -106,8 +139,8 @@ class RandomForest:
         print "average validation error =", average_error_val
         return average_error_val
 
-    def train(self, tree_num, train_x, train_y):
-        clf = ensemble.RandomForestClassifier(n_estimators=tree_num, n_jobs=-1, min_samples_leaf=100, oob_score=True, max_features="auto")
+    def train(self, tree_num, min_sample_leaves, train_x, train_y):
+        clf = ensemble.RandomForestClassifier(n_estimators=tree_num, n_jobs=-1, min_samples_leaf=min_sample_leaves, oob_score=True, max_features="auto")
         clf.fit(train_x, train_y.flatten())
         return clf
 
