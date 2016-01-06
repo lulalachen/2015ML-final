@@ -1,6 +1,8 @@
 */node_modules/
-data/*.csv
 fs-time-prefix/*
+data/log_test.csv
+data/log_train.csv
+.env
 
 # IDE Files
 .idea/*
