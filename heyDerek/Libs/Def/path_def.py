@@ -5,7 +5,7 @@ LIB_ROOT = "Libs/"
 # Input Data
 ####################
 # Input Data Root Folder
-DATA_PATH_ROOT = "../data/"
+DATA_PATH_ROOT = "data/"
 
 #############
 # Train data
