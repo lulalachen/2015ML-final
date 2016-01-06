@@ -1,14 +1,41 @@
 var _ = require('underscore');
+var fsp = require('fs-time-prefix');
+var wf = fsp.createWriteStream('./results/logs.csv');
+var stats = require("stats-lite");
 
 var LogList = function(){
   this.ids = [];
   this.logs = [];
+  var text = 'Id,mean,median,variance,timeSpent\n';
+  console.log(Object.keys(wf));
+  wf.write(text);
 }
 
 LogList.prototype.newLog = function(log) {
   this.ids.push(log.enrollment_id);
   this.logs.push(log);
 };
+
+LogList.prototype.releaseMemory = function() {
+  var text = '';
+  var id = this.ids.pop();
+  var log = this.logs.pop();
+  if (id%1000 ===0)
+    console.log(id);
+  text += id + ',';
+  text += JSON.stringify(getStats(log.timeGapByHour())['mean']);
+  text += ',';
+  text += JSON.stringify(getStats(log.timeGapByHour())['median']);
+  text += ',';
+  text += JSON.stringify(getStats(log.timeGapByHour())['variance']);
+  text += ',';
+  text += log.totalTimeSpendByHour().toString();
+  text += '\n';
+  wf.write(text);
+};
+
+
+//////////////////////////
 
 var Logs = function(row){
   this.enrollment_id  = row[0];
@@ -51,7 +78,21 @@ Logs.prototype.timeGapByDays = function() {
   return distribution;
 };
 
+Logs.prototype.timeGapByHour = function() {
+  var gap = 0;
+  var distribution = [0];
+  for (var i = 1; i < this.log.length; i++) {
+    gap = new Date(this.log[i].time) - new Date(this.log[i-1].time);
+    distribution.push(gap/(1000*60*60));
+  };
+  distribution = _.reject(distribution,function(num){return num <= 1});
+  return distribution;
+};
 
+Logs.prototype.totalTimeSpendByHour = function() {
+  var l = this.log.length;
+  return (new Date(this.log[l-1].time) - new Date(this.log[0].time))/(1000*60*60);
+};
 
 var list = new LogList();
 
@@ -64,13 +105,29 @@ function checkExistence (row){
     if (exist){
       var object = _.findWhere(list.logs, {enrollment_id : eId});
       object.addLog(row);
+    } else if (!exist && list.ids.length!== 0){
+      list.releaseMemory();
+
+      var newLog = new Logs(row);
+      list.newLog(newLog);
     } else {
       var newLog = new Logs(row);
       list.newLog(newLog);
     }
   }
 }
-
+function getStats(data){
+  // Calculate basic column stats //
+  var statistics = function (input){
+    this.sum = stats.sum(input);
+    this.mean = stats.mean(input);
+    this.median = stats.median(input);
+    this.variance = stats.variance(input);
+    this.standard_deviation = stats.stdev(input);
+    this.percentileOfEightyFive = stats.percentile(input,0.7);
+  };
+  return (data.length !== 0) ? new statistics(data) : new statistics([0]);
+}
 function printObject (){
   return list;
 }

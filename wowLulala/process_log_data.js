@@ -12,9 +12,12 @@ var LineByLineReader = require('line-by-line'),
     lr = new LineByLineReader(target);
 
 var from = 1,
-    to = 2000;
+    to = 7000000;
 
 var dataset = [];
+
+var line = 0;
+
 
 readFromFile(from, to, dataset, processFunction, function(err, data){
   if (err)
@@ -25,7 +28,8 @@ readFromFile(from, to, dataset, processFunction, function(err, data){
   for (var i = 0; i < dataset.logs.length; i++) {
     var dist = dataset.logs[i].timeDistribution();
     console.log('===== ' + dataset.logs[i].enrollment_id + ' =====');
-    console.log(getStats(dist));
+    // console.log(dist);
+    console.log(getStats(dist)['mean']);
   };
 
   console.log('\n\n');
@@ -34,7 +38,7 @@ readFromFile(from, to, dataset, processFunction, function(err, data){
   for (var i = 0; i < dataset.logs.length; i++) {
     var dist = dataset.logs[i].timeGapByDays();
     console.log('===== ' + dataset.logs[i].enrollment_id + ' =====');
-    console.log(getStats(dist));
+    console.log(getStats(dist)['mean']);
   };
 
   console.timeEnd('process');
@@ -44,11 +48,9 @@ readFromFile(from, to, dataset, processFunction, function(err, data){
 function processFunction (rows, dataset){
   // console.log('processing~~~');
   console.time('process');
-
   loglist.input(rows);
 }
 
-var line = 0;
 function readFromFile(offsets, limits, dataset, processor, callback){
 
   lr.on('line', function(data){
