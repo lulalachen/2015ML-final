@@ -1,4 +1,4 @@
-ID,user_log_num,course_log_num,take_course_num,take_user_num,log_num,server_nagivate,server_access,server_problem,browser_access,browser_problem,browser_page_close,browser_video,server_discussion,server_wiki,chapter_count,sequential_count,about,chapter,combinedopenended,course,course_info,discussion,html,outlink,peergrading,problem,sequential,static_tab,vertical,video
+ID,user_log_num,course_log_num,take_course_num,take_user_num,log_num,server_nagivate,server_access,server_problem,browser_access,browser_problem,browser_page_close,browser_video,server_discussion,server_wiki,chapter_count,sequential_count, video_count,about,chapter,combinedopenended,course,course_info,discussion,html,outlink,peergrading,problem,sequential,static_tab,vertical,video
 14,102,878119,1,10322,102,20,60,3,0,9,5,5,0,0,8,43,5,4,13,1,1,2,0,33,3,2,42,100,2,139,56
 20,646,878119,6,10322,142,35,59,0,0,0,34,12,1,1,15,28,12,4,13,1,1,2,0,33,3,2,42,100,2,139,56
 23,646,334927,6,7775,113,18,53,0,0,0,28,14,0,0,9,34,14,3,14,0,1,2,0,2,5,0,15,73,1,101,57
