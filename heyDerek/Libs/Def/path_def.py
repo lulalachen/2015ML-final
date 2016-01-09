@@ -18,6 +18,9 @@ LOG_TEST_CSV = "log_test.csv"
 ENROLLMENT_TRAIN_CSV = "enrollment_train.csv"
 ENROLLMENT_TEST_CSV = "enrollment_test.csv"
 
+# Enrollment Course Start Time
+ENROLLMENT_COURSE_START_TIME_CSV = "enrollment_course_start_time.csv"
+
 
 #############
 # Train data

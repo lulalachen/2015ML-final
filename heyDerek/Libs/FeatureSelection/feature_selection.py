@@ -4,6 +4,9 @@ from ..Utils import evaluate as ev
 import numpy as np
 
 
+################################################
+# Generate enrollment <-> Course Start Time CSV
+################################################
 def gen_enrollment_course_start_map():
     print "Reading", path_def.OBJECT_CSV
     object_data = ev.timer(io.read_raw_data, path_def.OBJECT_CSV)
@@ -36,3 +39,68 @@ def get_course_start_time(object_data, enrollment_data):
         if course_object_row[2] == 'course':
             course_times.append(course_object_row[4])
     return np.array(course_times)
+
+
+################################################
+# Gen Log Frequency Feature
+# Calculate N days in 30 days (frequency)
+# for each enrollment
+################################################
+def gen_log_frequency_feature():
+    # Reading data
+    print "Reading", path_def.ENROLLMENT_COURSE_START_TIME_CSV
+    enrollment_course_start_time_map = ev.timer(io.read_raw_data, path_def.ENROLLMENT_COURSE_START_TIME_CSV)
+    print "Reading", path_def.LOG_TRAIN_CSV
+    log_data_train = ev.timer(io.read_raw_data, path_def.LOG_TRAIN_CSV)
+    print "Reading", path_def.LOG_TEST_CSV
+    log_data_test = ev.timer(io.read_raw_data, path_def.LOG_TEST_CSV)
+
+    print "Generating train frequency features"
+    train_enrollments, train_times = ev.timer(gen_day_histogram_from_log, log_data_train[1:, ], enrollment_course_start_time_map[1:, ])
+    print "Generating test frequency features"
+    test_enrollments, test_times = ev.timer(gen_day_histogram_from_log, log_data_test[1:, ], enrollment_course_start_time_map[1:,])
+
+    train_frequency = np.array(gen_frequency_from_histograms(train_times))
+    test_frequency = np.array(gen_frequency_from_histograms(test_times))
+
+    train_enrollments = np.hstack((log_data_train[0, 0], train_enrollments))
+    test_enrollments = np.hstack((log_data_test[0, 0], test_enrollments))
+
+    header_log_frequency = 'log_frequency'
+    train_frequency = np.hstack((header_log_frequency, train_frequency))
+    test_frequency = np.hstack((header_log_frequency, test_frequency))
+
+    train_enrollment_frequency = np.hstack((train_enrollments.reshape((train_enrollments.shape[0], 1)), train_frequency.reshape((train_frequency.shape[0], 1))))
+    test_enrollment_frequency = np.hstack((test_enrollments.reshape((test_enrollments.shape[0], 1)), test_frequency.reshape((test_frequency.shape[0], 1))))
+
+    train_enrollment_frequency_file = path_def.DATA_PATH_ROOT + "enrollment_log_frequency_train.csv"
+    test_enrollment_frequency_file = path_def.DATA_PATH_ROOT + "enrollment_log_frequency_test.csv"
+    print "Writing data to", train_enrollment_frequency_file
+    ev.timer(io.write_raw_output_data, train_enrollment_frequency_file, train_enrollment_frequency)
+    print "Writing data to", test_enrollment_frequency_file
+    ev.timer(io.write_raw_output_data, test_enrollment_frequency_file, test_enrollment_frequency)
+
+
+def gen_day_histogram_from_log(log_data, enrollment_course_start_time_map):
+    enrollments = log_data[:, 0]
+    unique_enrollments = np.unique(enrollments)
+
+    days_counts = []
+    for enrollment in unique_enrollments:
+        enrollment_log_data = log_data[np.where(log_data[:, 0] == enrollment)]
+        enrollment_log_times = np.array(enrollment_log_data[:, 1], dtype='datetime64[s]')
+        course_start_time = enrollment_course_start_time_map[np.where(enrollment_course_start_time_map[:, 0] == enrollment), 1][0]
+        course_start_times = np.repeat(np.array(course_start_time, dtype='datetime64[s]'), enrollment_log_times.shape[0])
+        time_differences = enrollment_log_times - course_start_times
+        online_days = np.array(time_differences / 86400, dtype=np.int)
+        days_count = np.bincount(online_days, minlength=30)
+        days_counts.append(days_count)
+    return unique_enrollments, days_counts
+
+
+def gen_frequency_from_histograms(day_histograms):
+    day_frequencies = []
+    for day_histogram in day_histograms:
+        day_frequency = float(day_histogram[day_histogram > 0].shape[0]) / float(day_histogram.shape[0])
+        day_frequencies.append(day_frequency)
+    return day_frequencies

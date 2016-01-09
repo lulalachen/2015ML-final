@@ -15,4 +15,4 @@ from Libs.FeatureSelection import feature_selection
 # RF.run()
 # DNN = dnn.DNN("18:1024:1024:2", "C:0.1:500", 0, 0.5, "sigmoid")
 # DNN.run("track2")
-feature_selection.gen_enrollment_course_start_map()
+feature_selection.gen_log_frequency_feature()
