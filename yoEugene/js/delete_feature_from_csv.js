@@ -9,7 +9,7 @@ var parser = parse({
     delimiter: ','
 }, function(err, data) {
 
-	// Edit delete feature list
+    // Edit delete feature list
     var delete_list = ["about_30",
         "about_40",
         "combinedopenended_30",
@@ -41,10 +41,11 @@ var parser = parse({
                 output[index-1][data[0][i]] = data[index][i]*1;
             }
         }
-        console.log(index);
+        console.log(Math.round((index / data.length)*100) + '%');
     })
 
-
+    console.log('Start to write csv...');
+    console.log('---------------------');
 
     json2csv({
         data: output,
@@ -52,7 +53,7 @@ var parser = parse({
     }, function(err, csv) {
         if (err) console.log(err);
         // Edit write file name below ==================================
-        fs.writeFile('../sample_test_20160109.csv', csv, function(err) {
+        fs.writeFile('../sample_train_20160109.csv', csv, function(err) {
             if (err) throw err;
             console.log('file saved');
         });
@@ -60,4 +61,4 @@ var parser = parse({
 });
 
 // Edit read file name below ==================================
-fs.createReadStream('../sample_test_20160106.csv').pipe(parser);
+fs.createReadStream('../sample_train_20160106.csv').pipe(parser);
