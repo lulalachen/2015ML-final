@@ -7,6 +7,21 @@ LIB_ROOT = "Libs/"
 # Input Data Root Folder
 DATA_PATH_ROOT = "data/"
 
+# Object Data
+OBJECT_CSV = "object.csv"
+
+# Log Data
+LOG_TRAIN_CSV = "log_train.csv"
+LOG_TEST_CSV = "log_test.csv"
+
+# Enrollment Data
+ENROLLMENT_TRAIN_CSV = "enrollment_train.csv"
+ENROLLMENT_TEST_CSV = "enrollment_test.csv"
+
+# Enrollment Course Start Time
+ENROLLMENT_COURSE_START_TIME_CSV = "enrollment_course_start_time.csv"
+
+
 #############
 # Train data
 #############
