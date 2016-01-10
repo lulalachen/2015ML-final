@@ -43,6 +43,10 @@ Q.all(files)
   files.forEach(function(data){
     data.forEach(function(row, idx, arr){
       row.shift(); // Remove ID
+      
+      // eliminate the '\r' change line
+      finalData[idx][finalData[idx].length-1] = (finalData[idx][finalData[idx].length-1]*1).toString();
+      
       finalData[idx] = finalData[idx].concat(row);
     })
   })
