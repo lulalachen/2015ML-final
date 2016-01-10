@@ -18,6 +18,7 @@
     "line-by-line": "^0.1.4",
     "machine_learning": "0.0.8",
     "natural": "^0.2.1",
+    "q": "^1.4.1",
     "stats-lite": "^2.0.0",
     "time": "^0.11.4",
     "underscore": "^1.8.3"

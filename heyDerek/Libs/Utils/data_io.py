@@ -24,6 +24,12 @@ def read_raw_input_data(input_data_file):
     return data_id, data
 
 
+def read_raw_data(raw_data_file):
+    raw_data_path = path_def.DATA_PATH_ROOT + raw_data_file
+    raw_data = np.genfromtxt(raw_data_path, delimiter=',', dtype=str)
+    return raw_data
+
+
 # Note that the first argument is the "output data path", not output data filename
 # because the output data path depends on which algorithm you use (SVM, DNN,...)
 # output data should be a numpy array
