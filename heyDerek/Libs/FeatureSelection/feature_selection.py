@@ -81,6 +81,35 @@ def gen_log_frequency_feature():
     ev.timer(io.write_raw_output_data, test_enrollment_frequency_file, test_enrollment_frequency)
 
 
+def gen_log_histogram_feature():
+    # Reading data
+    print "Reading", path_def.ENROLLMENT_COURSE_START_TIME_CSV
+    enrollment_course_start_time_map = ev.timer(io.read_raw_data, path_def.ENROLLMENT_COURSE_START_TIME_CSV)
+    print "Reading", path_def.LOG_TRAIN_CSV
+    log_data_train = ev.timer(io.read_raw_data, path_def.LOG_TRAIN_CSV)
+    print "Reading", path_def.LOG_TEST_CSV
+    log_data_test = ev.timer(io.read_raw_data, path_def.LOG_TEST_CSV)
+
+    print "Generating train histogram features"
+    train_histogram_with_enrollments = ev.timer(gen_day_histogram_with_enrollment_from_log, log_data_train[1:, ], enrollment_course_start_time_map[1:, ])
+    print "Generating test histogram features"
+    test_histogram_with_enrollments = ev.timer(gen_day_histogram_with_enrollment_from_log, log_data_test[1:, ], enrollment_course_start_time_map[1:,])
+
+    headers = [log_data_train[0, 0]]
+    headers += ['day_' + str(i) for i in range(1, 31)]
+    headers = np.array(headers)
+
+    train_enrollment_histogram = np.vstack((headers, train_histogram_with_enrollments))
+    test_enrollment_histogram = np.vstack((headers, test_histogram_with_enrollments))
+
+    train_enrollment_histogram_file = path_def.DATA_PATH_ROOT + "enrollment_log_histogram_train.csv"
+    test_enrollment_histogram_file = path_def.DATA_PATH_ROOT + "enrollment_log_histogram_test.csv"
+    print "Writing data to", train_enrollment_histogram_file
+    ev.timer(io.write_raw_output_data, train_enrollment_histogram_file, train_enrollment_histogram)
+    print "Writing data to", test_enrollment_histogram_file
+    ev.timer(io.write_raw_output_data, test_enrollment_histogram_file, test_enrollment_histogram)
+
+
 def gen_day_histogram_from_log(log_data, enrollment_course_start_time_map):
     enrollments = log_data[:, 0]
     unique_enrollments = np.unique(enrollments)
@@ -96,6 +125,24 @@ def gen_day_histogram_from_log(log_data, enrollment_course_start_time_map):
         days_count = np.bincount(online_days, minlength=30)
         days_counts.append(days_count)
     return unique_enrollments, days_counts
+
+
+def gen_day_histogram_with_enrollment_from_log(log_data, enrollment_course_start_time_map):
+    enrollments = log_data[:, 0]
+    unique_enrollments = np.unique(enrollments)
+
+    days_counts = []
+    for enrollment in unique_enrollments:
+        enrollment_log_data = log_data[np.where(log_data[:, 0] == enrollment)]
+        enrollment_log_times = np.array(enrollment_log_data[:, 1], dtype='datetime64[s]')
+        course_start_time = enrollment_course_start_time_map[np.where(enrollment_course_start_time_map[:, 0] == enrollment), 1][0]
+        course_start_times = np.repeat(np.array(course_start_time, dtype='datetime64[s]'), enrollment_log_times.shape[0])
+        time_differences = enrollment_log_times - course_start_times
+        online_days = np.array(time_differences / 86400, dtype=np.int)
+        days_count = np.bincount(online_days, minlength=30)
+        days_counts.append(days_count)
+    histogram_with_enrollment = np.hstack((unique_enrollments.reshape((unique_enrollments.shape[0], 1)), np.array(days_counts)))
+    return histogram_with_enrollment
 
 
 def gen_frequency_from_histograms(day_histograms):
