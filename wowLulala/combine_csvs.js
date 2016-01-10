@@ -9,21 +9,17 @@ var fsp = require('fs-time-prefix'),
 ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// Modify Here Only //////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-var datatype = 'test';
+var datatype = 'train';
 
 var lists_train = [
-                    '../data/sample_train_adjusted_course_stats.csv',
-                    '../data/log_gaps_train.csv',
-                    '../yoEugene/special_data/problem_within_30_40_train.csv'
+                    '../data/enrollment_log_histogram_train.csv'
                   ];
 var lists_test  = [
-                    '../data/sample_test_adjusted_course_stats.csv',
-                    '../data/log_gaps_test.csv',
-                    '../yoEugene/special_data/problem_within_30_40_test.csv'
+                    '../data/enrollment_log_histogram_test.csv'
                   ];
 var output = (datatype === 'train')
-            ? '../data/sample_train_20160106.csv'
-            : '../data/sample_test_20160106.csv';
+            ? '../data/sample_train_20160110_top25_plus_freq_histogram.csv'
+            : '../data/sample_test_20160110_top25_plus_freq_histogram.csv';
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +27,8 @@ var output = (datatype === 'train')
 var lists = (datatype === 'train') ? lists_train : lists_test;
 
 var target = (datatype === 'train')
-            ? '../data/sample_train_x.csv'
-            : '../data/sample_test_x.csv';
+            ? '../data/sample_train_20160106_with_log_freq_top25.csv'
+            : '../data/sample_test_20160106_with_log_freq_top25.csv';
 console.time('Combine files')
 lists.unshift(target);
 var files = [];
