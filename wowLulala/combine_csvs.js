@@ -45,7 +45,10 @@ Q.all(files)
       row.shift(); // Remove ID
       
       // eliminate the '\r' change line
-      finalData[idx][finalData[idx].length-1] = (finalData[idx][finalData[idx].length-1]*1).toString();
+      if (idx === 0)
+        finalData[0][finalData[0].length-1] = finalData[0][finalData[0].length-1].replace(/(\r\n|\n|\r)/gm,"");
+      if (idx !== 0)
+        finalData[idx][finalData[idx].length-1] = (finalData[idx][finalData[idx].length-1]*1).toString();
       
       finalData[idx] = finalData[idx].concat(row);
     })
