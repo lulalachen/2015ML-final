@@ -29,20 +29,21 @@ TRUTH_TRAIN_CSV = "truth_train.csv"
 
 # Train data features
 # SAMPLE_TRAIN_X_CSV = "sample_train_x.csv"
-SAMPLE_TRAIN_X_CSV = "filtered_sample_train_x_with_course_stats.csv"
+SAMPLE_TRAIN_X_CSV = "sample_train_20160111_top25_freq_histogram_plus_uniq_obj_count.csv"
 
 ############
 # Test data
 ############
 # Test data features
 # SAMPLE_TEST_X_CSV = "sample_test_x.csv"
-SAMPLE_TEST_X_CSV = "filtered_sample_test_x_with_course_stats.csv"
+SAMPLE_TEST_X_CSV = "sample_test_20160111_top25_freq_histogram_plus_uniq_obj_count.csv"
 
 
 # Algorithm Roots
 SVM_ROOT = "SVM/"
 LOGISTIC_REGRESSION_ROOT = "LogisticRegression/"
 RANDOM_FOREST_ROOT = "RandomForest/"
+GRADIENT_BOOST_ROOT = "GradientBoosting/"
 DNN_ROOT = "DNN/"
 
 # Output Folders
