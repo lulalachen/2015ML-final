@@ -18,7 +18,7 @@ class RandomForest:
         self._tree_num = tree_num
         self._min_sample_leaves = min_sample_leaves
 
-    def run(self, track="track1"):
+    def run(self, track="track1", do_cv=False):
         # Read input data
         input_data_id, input_x, input_y = self.read_input_data(path_def.SAMPLE_TRAIN_X_CSV, io.read_train_data)
         # Preprocess input data
@@ -53,21 +53,12 @@ class RandomForest:
         #         best_min_sample_leaves = l
         #         self._best_clf = clf
         # print "best min sample leaves =", best_min_sample_leaves
+        if do_cv == True:
+            ev.timer(self.cross_validation, input_x, input_y, self._min_sample_leaves)
 
-        scores = []
-
-        for min_leaves in self._min_sample_leaves:
-            clf = ensemble.RandomForestClassifier(n_estimators=100, n_jobs=-1, min_samples_leaf=min_leaves, oob_score=False, max_features="auto")
-            score = cross_validation.cross_val_score(clf, input_x, input_y, cv=5, scoring='f1_weighted')
-            scores.append(score.mean())
-
-        best_score_index = np.argmax(scores)
-        best_score = scores[best_score_index]
-
-        print "Cross Validation =", best_score, ", with best min_sample_leaves =", self._min_sample_leaves[best_score_index]
-
-        print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._min_sample_leaves[best_score_index]
-        self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves[best_score_index], input_x, input_y)
+        else:
+            print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._min_sample_leaves
+            self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves, input_x, input_y)
 
 
         # print "Extracting good features"
@@ -153,6 +144,23 @@ class RandomForest:
     #     average_error_val = np.average(error_val_list)
     #     print "average validation error =", average_error_val
     #     return average_error_val
+
+    # Validation
+    def cross_validation(self, input_x, input_y, min_sample_leaves):
+        all_scores = []
+
+        for min_leaves in min_sample_leaves:
+            clf = ensemble.RandomForestClassifier(n_estimators=10, n_jobs=-1, min_samples_leaf=min_leaves, oob_score=False, max_features="auto")
+            scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=5, scoring='f1_weighted')
+            all_scores.append(scores.mean())
+
+        best_score_index = np.argmax(all_scores)
+        best_score = all_scores[best_score_index]
+
+        print "Cross Validation =", best_score, ", with best min_sample_leaves =", self._min_sample_leaves[best_score_index]
+
+        print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._min_sample_leaves[best_score_index]
+        self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves[best_score_index], input_x, input_y)
 
     def train(self, tree_num, min_sample_leaves, train_x, train_y):
         clf = ensemble.RandomForestClassifier(n_estimators=tree_num, n_jobs=-1, min_samples_leaf=min_sample_leaves, oob_score=True, max_features="auto")
