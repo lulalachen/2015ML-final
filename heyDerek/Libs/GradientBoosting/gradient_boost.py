@@ -12,11 +12,11 @@ class GradientBoost:
         # Result / Model path
         self._result_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.GRADIENT_BOOST_ROOT + path_def.RESULT_FOLDER
         self._model_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.GRADIENT_BOOST_ROOT + path_def.MODEL_FOLDER
-        self._fold_num = fold_num
 
         # Model Parameters
         self._tree_num = tree_num
         self._depth = depth
+        self._fold_num = fold_num
 
     def run(self, track="track1", do_cv=False):
         # Read input data
@@ -159,6 +159,9 @@ class GradientBoost:
 
         print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._depth[best_score_index]
         self._best_clf = ev.timer(self.train, self._tree_num, self._depth[best_score_index], input_x, input_y)
+
+        good_feature_indices = self.extract_good_features(self._best_clf, 100)
+        print good_feature_indices
 
     def train(self, tree_num, depth, train_x, train_y):
         clf = ensemble.GradientBoostingClassifier(n_estimators=tree_num , max_depth=depth, max_features="auto")
