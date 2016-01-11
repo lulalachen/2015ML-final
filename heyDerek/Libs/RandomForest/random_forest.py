@@ -61,14 +61,6 @@ class RandomForest:
             self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves, input_x, input_y)
 
 
-        # print "Extracting good features"
-        # feature_nums = [5, 7, 9]
-        # for feature_num in feature_nums:
-        #     good_feature_indices = self.extract_good_features(self._best_clf, feature_num)
-        #     extracted_train_filename = path_def.DATA_PATH_ROOT + "rf_" + str(self._tree_num) + "_trees_" + str(feature_num) + "_features_train_x.csv"
-        #     extracted_test_filename = path_def.DATA_PATH_ROOT + "rf_" + str(self._tree_num) + "_trees_" + str(feature_num) + "_features_test_x.csv"
-        #     io.extract_features(path_def.SAMPLE_TRAIN_X_CSV, extracted_train_filename, good_feature_indices)
-        #     io.extract_features(path_def.SAMPLE_TEST_X_CSV, extracted_test_filename, good_feature_indices)
 
 
         # Read test data
@@ -151,7 +143,7 @@ class RandomForest:
 
         for min_leaves in min_sample_leaves:
             clf = ensemble.RandomForestClassifier(n_estimators=10, n_jobs=-1, min_samples_leaf=min_leaves, oob_score=False, max_features="auto")
-            scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=5, scoring='f1_weighted')
+            scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=self._fold_num, scoring='f1_weighted')
             all_scores.append(scores.mean())
 
         best_score_index = np.argmax(all_scores)
