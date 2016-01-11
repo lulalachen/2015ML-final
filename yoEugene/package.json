@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "csv-parse": "^1.0.1",
-    "json2csv": "^3.0.2"
+    "json2csv": "^3.0.2",
+    "plotly": "^1.0.6"
   }
 }
