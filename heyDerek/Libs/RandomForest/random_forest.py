@@ -139,17 +139,21 @@ class RandomForest:
 
     # Validation
     def cross_validation(self, input_x, input_y, min_sample_leaves):
+        print "Start Validation with min_sample_leaves =", min_sample_leaves, ", fold_num =", self._fold_num
         all_scores = []
+        all_stds = []
 
         for min_leaves in min_sample_leaves:
             clf = ensemble.RandomForestClassifier(n_estimators=10, n_jobs=-1, min_samples_leaf=min_leaves, oob_score=False, max_features="auto")
             scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=self._fold_num, scoring='f1_weighted')
             all_scores.append(scores.mean())
+            all_stds.append(scores.std() * 2)
 
         best_score_index = np.argmax(all_scores)
         best_score = all_scores[best_score_index]
 
         print "Cross Validation =", best_score, ", with best min_sample_leaves =", self._min_sample_leaves[best_score_index]
+        print "All Scores", all_scores, ", with stds 95 confidence =", all_stds
 
         print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._min_sample_leaves[best_score_index]
         self._best_clf = ev.timer(self.train, self._tree_num, self._min_sample_leaves[best_score_index], input_x, input_y)
