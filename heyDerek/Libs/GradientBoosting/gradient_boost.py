@@ -149,6 +149,7 @@ class GradientBoost:
             scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=self._fold_num, scoring='f1_weighted')
             all_scores.append(scores.mean())
             all_stds.append(scores.std() * 2)
+            print "Done cv for depth =", dep
 
         best_score_index = np.argmax(all_scores)
         best_score = all_scores[best_score_index]
@@ -158,7 +159,6 @@ class GradientBoost:
 
         print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._depth[best_score_index]
         self._best_clf = ev.timer(self.train, self._tree_num, self._depth[best_score_index], input_x, input_y)
-
 
     def train(self, tree_num, depth, train_x, train_y):
         clf = ensemble.GradientBoostingClassifier(n_estimators=tree_num , max_depth=depth, max_features="auto")
