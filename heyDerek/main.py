@@ -16,4 +16,4 @@ from Libs.FeatureSelection import feature_selection
 # DNN = dnn.DNN("18:1024:1024:2", "C:0.1:500", 0, 0.5, "sigmoid")
 # DNN.run("track2")
 # feature_selection.gen_log_frequency_feature()
-feature_selection.gen_log_histogram_feature()
+feature_selection.gen_log_unique_object_count()
