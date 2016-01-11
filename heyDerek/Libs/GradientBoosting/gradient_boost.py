@@ -140,6 +140,7 @@ class GradientBoost:
 
     # Validation
     def cross_validation(self, input_x, input_y, depth):
+        print "Start Validation with depth =", min_sample_leaves, ", fold_num =", self._fold_num
         all_scores = []
         all_stds = []
 
