@@ -243,3 +243,39 @@ def user_unique_object_count_from_log(enrollment_data, enrollment_uniq_obj_count
     user_sorted_enrollment_data = user_sorted_enrollment_data[user_sorted_enrollment_data[:, 0].astype(int).argsort()]
     return user_sorted_enrollment_data[:, 0: 2]
 
+
+################################################
+# Gen Log Histogram FFT
+# Calculate FFT of log histogram
+# for each enrollment
+################################################
+def gen_log_fft():
+    # Reading data
+    print "Reading", path_def.ENROLLMENT_LOG_HISTOGRAM_TRAIN_CSV
+    enrollment_log_histogram_train = ev.timer(io.read_raw_data, path_def.ENROLLMENT_LOG_HISTOGRAM_TRAIN_CSV)
+    print "Reading", path_def.ENROLLMENT_LOG_HISTOGRAM_TEST_CSV
+    enrollment_log_histogram_test = ev.timer(io.read_raw_data, path_def.ENROLLMENT_LOG_HISTOGRAM_TEST_CSV)
+
+    histogram_train = enrollment_log_histogram_train[1:, 1:].astype(float)
+    histogram_test = enrollment_log_histogram_test[1:, 1:].astype(float)
+
+    print "Generating train log histogram fft features"
+    histogram_fft_train = np.abs(np.fft.fft(histogram_train, axis=1))
+    histogram_fft_train_with_enrollment = np.hstack((enrollment_log_histogram_train[1:, 0].reshape(enrollment_log_histogram_train[1:, 0].shape[0], 1), histogram_fft_train))
+    print "Generating test log histogram fft features"
+    histogram_fft_test = np.abs(np.fft.fft(histogram_test, axis=1))
+    histogram_fft_test_with_enrollment = np.hstack((enrollment_log_histogram_test[1:, 0].reshape(enrollment_log_histogram_test[1:, 0].shape[0], 1), histogram_fft_test))
+
+    headers = [enrollment_log_histogram_train[0, 0]]
+    headers += ['fft_' + str(i) for i in range(1, 31)]
+    headers = np.array(headers)
+
+    train_enrollment_fft = np.vstack((headers, histogram_fft_train_with_enrollment))
+    test_enrollment_fft = np.vstack((headers, histogram_fft_test_with_enrollment))
+
+    train_enrollment_fft_file = path_def.DATA_PATH_ROOT + "enrollment_log_histogram_fft_train.csv"
+    test_enrollment_fft_file = path_def.DATA_PATH_ROOT + "enrollment_log_histogram_fft_test.csv"
+    print "Writing data to", train_enrollment_fft_file
+    ev.timer(io.write_raw_output_data, train_enrollment_fft_file, train_enrollment_fft)
+    print "Writing data to", test_enrollment_fft_file
+    ev.timer(io.write_raw_output_data, test_enrollment_fft_file, test_enrollment_fft)
