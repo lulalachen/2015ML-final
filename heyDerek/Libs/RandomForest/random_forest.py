@@ -148,6 +148,7 @@ class RandomForest:
             scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=self._fold_num, scoring='f1_weighted')
             all_scores.append(scores.mean())
             all_stds.append(scores.std() * 2)
+            print "Done cv for min_leaves =", min_leaves
 
         best_score_index = np.argmax(all_scores)
         best_score = all_scores[best_score_index]
