@@ -151,3 +151,95 @@ def gen_frequency_from_histograms(day_histograms):
         day_frequency = float(day_histogram[day_histogram > 0].shape[0]) / float(day_histogram.shape[0])
         day_frequencies.append(day_frequency)
     return day_frequencies
+
+
+################################################
+# Gen Log Unique Object Count Feature
+# Calculate unique object count
+# for each enrollment
+################################################
+def gen_log_unique_object_count():
+    # Reading data
+    print "Reading", path_def.LOG_TRAIN_CSV
+    log_data_train = ev.timer(io.read_raw_data, path_def.LOG_TRAIN_CSV)
+    print "Reading", path_def.LOG_TEST_CSV
+    log_data_test = ev.timer(io.read_raw_data, path_def.LOG_TEST_CSV)
+
+    print "Generating train unique object count features"
+    train_unique_object_counts_with_enrollment = gen_unique_object_count_from_log(log_data_train[1:, ])
+    print "Generating test unique object count features"
+    test_unique_object_counts_with_enrollment = gen_unique_object_count_from_log(log_data_test[1:, ])
+
+    headers = np.array([log_data_train[0, 0], 'unique_object_count'])
+
+    train_enrollment_unique_object_counts = np.vstack((headers, train_unique_object_counts_with_enrollment))
+    test_enrollment_unique_object_counts = np.vstack((headers, test_unique_object_counts_with_enrollment))
+
+    train_enrollment_unique_object_count_file = path_def.DATA_PATH_ROOT + "enrollment_log_unique_object_count_train.csv"
+    test_enrollment_unique_object_count_file = path_def.DATA_PATH_ROOT + "enrollment_log_unique_object_count_test.csv"
+    print "Writing data to", train_enrollment_unique_object_count_file
+    ev.timer(io.write_raw_output_data, train_enrollment_unique_object_count_file, train_enrollment_unique_object_counts)
+    print "Writing data to", test_enrollment_unique_object_count_file
+    ev.timer(io.write_raw_output_data, test_enrollment_unique_object_count_file, test_enrollment_unique_object_counts)
+
+
+def gen_unique_object_count_from_log(log_data):
+    enrollments = log_data[:, 0].astype(np.int)
+    unique_enrollments = np.unique(enrollments)
+    enrollment_counts = np.bincount(enrollments)
+    enrollment_counts_accum = np.add.accumulate(enrollment_counts)
+    enrollment_unique_object_counts = []
+    for enrollment in unique_enrollments:
+        enrollment_end_idx = enrollment_counts_accum[enrollment]
+        enrollment_start_idx = enrollment_counts_accum[enrollment] - enrollment_counts[enrollment]
+        enrollment_object_data = log_data[enrollment_start_idx: enrollment_end_idx, 4]
+        unique_object_count = np.unique(enrollment_object_data).shape[0]
+        enrollment_unique_object_counts.append(unique_object_count)
+    enrollment_unique_object_counts = np.array(enrollment_unique_object_counts)
+    unique_object_counts_with_enrollment = np.hstack((unique_enrollments.reshape((unique_enrollments.shape[0], 1)), enrollment_unique_object_counts.reshape((enrollment_unique_object_counts.shape[0], 1))))
+    return unique_object_counts_with_enrollment
+
+
+def gen_user_unique_object_count_features():
+    # Reading data
+    print "Reading", path_def.ENROLLMENT_TRAIN_CSV
+    enrollment_data_train = ev.timer(io.read_raw_data, path_def.ENROLLMENT_TRAIN_CSV)
+    print "Reading", path_def.ENROLLMENT_TEST_CSV
+    enrollment_data_test = ev.timer(io.read_raw_data, path_def.ENROLLMENT_TEST_CSV)
+    print "Reading", path_def.ENROLLMENT_UNIQ_OBJ_COUNT_TRAIN_CSV
+    enrollment_uniq_obj_count_train = ev.timer(io.read_raw_data, path_def.ENROLLMENT_UNIQ_OBJ_COUNT_TRAIN_CSV)
+    print "Reading", path_def.ENROLLMENT_UNIQ_OBJ_COUNT_TEST_CSV
+    enrollment_uniq_obj_count_test = ev.timer(io.read_raw_data, path_def.ENROLLMENT_UNIQ_OBJ_COUNT_TEST_CSV)
+
+    print "Generating train user unique object count features"
+    train_unique_user_object_counts_with_enrollment = user_unique_object_count_from_log(enrollment_data_train[1:, ], enrollment_uniq_obj_count_train[1:, ])
+    print "Generating test user unique object count features"
+    test_unique_user_object_counts_with_enrollment = user_unique_object_count_from_log(enrollment_data_test[1:, ], enrollment_uniq_obj_count_test[1:, ])
+
+    headers = np.array([enrollment_data_train[0, 0], 'unique_user_object_count'])
+
+    train_enrollment_unique_user_object_counts = np.vstack((headers, train_unique_user_object_counts_with_enrollment))
+    test_enrollment_unique_user_object_counts = np.vstack((headers, test_unique_user_object_counts_with_enrollment))
+
+    train_enrollment_unique_user_object_count_file = path_def.DATA_PATH_ROOT + "enrollment_log_unique_user_object_count_train.csv"
+    test_enrollment_unique_user_object_count_file = path_def.DATA_PATH_ROOT + "enrollment_log_unique_user_object_count_test.csv"
+    print "Writing data to", train_enrollment_unique_user_object_count_file
+    ev.timer(io.write_raw_output_data, train_enrollment_unique_user_object_count_file, train_enrollment_unique_user_object_counts)
+    print "Writing data to", test_enrollment_unique_user_object_count_file
+    ev.timer(io.write_raw_output_data, test_enrollment_unique_user_object_count_file, test_enrollment_unique_user_object_counts)
+
+
+def user_unique_object_count_from_log(enrollment_data, enrollment_uniq_obj_count_data):
+    all_user_data = enrollment_data[:, 1]
+    all_enrollment_user_obj_data = np.hstack((enrollment_uniq_obj_count_data, all_user_data.reshape(all_user_data.shape[0], 1)))
+    unique_user_data, user_counts = np.unique(all_user_data, return_counts=True)
+    user_sorted_enrollment_data = all_enrollment_user_obj_data[all_enrollment_user_obj_data[:, -1].argsort()]
+    user_counts_accum = np.add.accumulate(user_counts)
+    for i in range(user_counts.shape[0]):
+        sorted_enrollment_end_idx = user_counts_accum[i]
+        sorted_enrollment_start_idx = sorted_enrollment_end_idx - user_counts[i]
+        user_uniq_object_counts = user_sorted_enrollment_data[sorted_enrollment_start_idx: sorted_enrollment_end_idx, 1].astype(int)
+        user_sorted_enrollment_data[sorted_enrollment_start_idx: sorted_enrollment_end_idx, 1] = np.sum(user_uniq_object_counts)
+    user_sorted_enrollment_data = user_sorted_enrollment_data[user_sorted_enrollment_data[:, 0].astype(int).argsort()]
+    return user_sorted_enrollment_data[:, 0: 2]
+
