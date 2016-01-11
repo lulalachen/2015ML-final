@@ -2,21 +2,23 @@ from ..Def import path_def
 from ..Utils import data_io as io
 from ..Utils import evaluate as ev
 from ..Utils import data_util as du
+from sklearn import cross_validation
 from sklearn import ensemble
 import numpy as np
 
 
 class GradientBoost:
-    def __init__(self, tree_num, depth):
+    def __init__(self, tree_num, depth, fold_num):
         # Result / Model path
         self._result_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.GRADIENT_BOOST_ROOT + path_def.RESULT_FOLDER
         self._model_path = path_def.DEREK_ROOT + path_def.LIB_ROOT + path_def.GRADIENT_BOOST_ROOT + path_def.MODEL_FOLDER
+        self._fold_num = fold_num
 
         # Model Parameters
         self._tree_num = tree_num
         self._depth = depth
 
-    def run(self, track="track1"):
+    def run(self, track="track1", do_cv=False):
         # Read input data
         input_data_id, input_x, input_y = self.read_input_data(path_def.SAMPLE_TRAIN_X_CSV, io.read_train_data)
         # Preprocess input data
@@ -51,8 +53,12 @@ class GradientBoost:
         #         best_min_sample_leaves = l
         #         self._best_clf = clf
         # print "best min sample leaves =", best_min_sample_leaves
-        print "Training with tree num =", self._tree_num, ", depth =", self._depth
-        self._best_clf = ev.timer(self.train, self._tree_num, self._depth, input_x, input_y)
+        if do_cv == True:
+            ev.timer(self.cross_validation, input_x, input_y, self._depth)
+
+        else:
+            print "Training with tree num =", self._tree_num, ", depth =", self._depth
+            self._best_clf = ev.timer(self.train, self._tree_num, self._depth, input_x, input_y)
 
         good_feature_indices = self.extract_good_features(self._best_clf, 100)
         print good_feature_indices
@@ -110,27 +116,48 @@ class GradientBoost:
         important_features_order_indices = important_features.argsort()
         return important_features_order_indices[::-1][0:extract_num]
 
-    # Train / Validata / Test
-    def cross_validation(self, c, input_data):
-        # Cross validation
-        error_val_list = []
-        for fold_idx in range(self._fold_num):
-            print "fold:", fold_idx + 1
-            train_data, val_data = du.get_folded_data(input_data, self._fold_num, fold_idx)
-            # Training
-            train_x = train_data[:, 0:-1]
-            train_y = train_data[:, -1]
-            print "training..."
-            trained_clf = ev.timer(self.train, c, train_x, train_y)
-            # Validating
-            val_x = val_data[:, 0: -1]
-            val_y = val_data[:, -1]
-            print "validating..."
-            error_val = ev.timer(self.validate, trained_clf, val_x, val_y)
-            error_val_list.append(error_val)
-        average_error_val = np.average(error_val_list)
-        print "average validation error =", average_error_val
-        return average_error_val
+    # # Train / Validata / Test
+    # def cross_validation(self, c, input_data):
+    #     # Cross validation
+    #     error_val_list = []
+    #     for fold_idx in range(self._fold_num):
+    #         print "fold:", fold_idx + 1
+    #         train_data, val_data = du.get_folded_data(input_data, self._fold_num, fold_idx)
+    #         # Training
+    #         train_x = train_data[:, 0:-1]
+    #         train_y = train_data[:, -1]
+    #         print "training..."
+    #         trained_clf = ev.timer(self.train, c, train_x, train_y)
+    #         # Validating
+    #         val_x = val_data[:, 0: -1]
+    #         val_y = val_data[:, -1]
+    #         print "validating..."
+    #         error_val = ev.timer(self.validate, trained_clf, val_x, val_y)
+    #         error_val_list.append(error_val)
+    #     average_error_val = np.average(error_val_list)
+    #     print "average validation error =", average_error_val
+    #     return average_error_val
+
+    # Validation
+    def cross_validation(self, input_x, input_y, depth):
+        all_scores = []
+        all_stds = []
+
+        for dep in depth:
+            clf = ensemble.GradientBoostingClassifier(n_estimators=100 , max_depth=dep, max_features="auto")
+            scores = cross_validation.cross_val_score(clf, input_x, input_y.flatten(), cv=self._fold_num, scoring='f1_weighted')
+            all_scores.append(scores.mean())
+            all_stds.append(scores.std() * 2)
+
+        best_score_index = np.argmax(all_scores)
+        best_score = all_scores[best_score_index]
+
+        print "Cross Validation =", best_score, ", with best min_sample_leaves =", self._depth[best_score_index]
+        print "All Scores", all_scores, ", with stds 95 confidence =", all_stds
+
+        print "Training with tree num =", self._tree_num, ", min sample leaves num =", self._depth[best_score_index]
+        self._best_clf = ev.timer(self.train, self._tree_num, self._depth[best_score_index], input_x, input_y)
+
 
     def train(self, tree_num, depth, train_x, train_y):
         clf = ensemble.GradientBoostingClassifier(n_estimators=tree_num , max_depth=depth, max_features="auto")
