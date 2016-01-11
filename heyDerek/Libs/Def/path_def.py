@@ -21,6 +21,10 @@ ENROLLMENT_TEST_CSV = "enrollment_test.csv"
 # Enrollment Course Start Time
 ENROLLMENT_COURSE_START_TIME_CSV = "enrollment_course_start_time.csv"
 
+# Enrollment Unique Object Count
+ENROLLMENT_UNIQ_OBJ_COUNT_TRAIN_CSV = "enrollment_log_unique_object_count_train.csv"
+ENROLLMENT_UNIQ_OBJ_COUNT_TEST_CSV = "enrollment_log_unique_object_count_test.csv"
+
 
 #############
 # Train data
